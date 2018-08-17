@@ -13,6 +13,9 @@ class MyApp extends StatelessWidget {
           child: RandomWords(),
         ),
       ),
+      theme: new ThemeData(
+        primaryColor: Colors.red,
+      ),
     );
   }
 }
@@ -24,19 +27,50 @@ class RandomWordsState extends State<RandomWords> {
   Widget build(BuildContext context) {
     // final wordPair = WordPair.random();
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Welcome to Flutter'),
-          actions: <Widget>[
-            new IconButton(icon: const Icon(Icons.list), onPressed: _pushSave,)
-          ],),
-        body: Center(
-          child: _buildSuggestion(),
-        ),
+      appBar: AppBar(
+        title: Text('Welcome to Flutter'),
+        actions: <Widget>[
+          new IconButton(
+            icon: const Icon(Icons.list),
+            onPressed: _pushSave,
+          )
+        ],
+      ),
+      body: Center(
+        child: _buildSuggestion(),
+      ),
     );
   }
 
   _pushSave() {
     print("Click _pushSave()");
+    Navigator.push(context, new MaterialPageRoute<void>(
+      builder: (BuildContext context) {
+        final Iterable<ListTile> tiles = _saves.map((WordPair wordPair) {
+          return new ListTile(
+            title: new Text(
+              wordPair.asPascalCase,
+              style: const TextStyle(fontSize: 18.0),
+            ),
+          );
+        });
+
+        final List<Widget> divided = ListTile
+            .divideTiles(
+              context: context,
+              tiles: tiles,
+            )
+            .toList();
+
+        return new Scaffold(
+          // Add 6 lines from here...
+          appBar: new AppBar(
+            title: const Text('Saved Suggestions'),
+          ),
+          body: new ListView(children: divided),
+        ); // ... to here.
+      },
+    ));
   }
 
   _buildSuggestion() {
@@ -65,7 +99,7 @@ class RandomWordsState extends State<RandomWords> {
         color: alreadySaved ? Colors.red : null,
       ),
       onTap: () {
-        setState((){
+        setState(() {
           if (alreadySaved) {
             _saves.remove(wordPair);
           } else {
